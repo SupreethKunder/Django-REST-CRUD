@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "django blogpost api"
+version = "0.0.0"
+description = "A Sample Django API to perform CRUD operations over a blog post"
+authors = ["SupreethKunder <kundersupreeth@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+djangorestframework = "^3.15.1"
+django = "^5.0.4"
+environs = "^11.0.0"
+python-dotenv = "^1.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
