@@ -1,2 +1,2 @@
 # Django-CRUD
-A sample CRUD API written in Django framework over a particular product
+A sample CRUD API written in Django framework for a sample product
