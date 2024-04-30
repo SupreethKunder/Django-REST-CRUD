@@ -12,6 +12,10 @@ djangorestframework = "^3.15.1"
 django = "^5.0.4"
 environs = "^11.0.0"
 python-dotenv = "^1.0.1"
+psycopg2-binary = "^2.9.9"
+algoliasearch-django = "^3.0.0"
+django-cors-headers = "^4.3.1"
+django-dotenv = "^1.4.2"
 
 
 [build-system]

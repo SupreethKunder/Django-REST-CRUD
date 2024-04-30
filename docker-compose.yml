@@ -1,0 +1,26 @@
+version: '4'
+
+services:
+  postgres:
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    networks:
+      - django_network
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+networks:
+  django_network:
+    driver: bridge
+
+volumes:
+  db_data:

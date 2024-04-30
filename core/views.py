@@ -6,9 +6,24 @@ from django.shortcuts import get_object_or_404
 
 from .models import Product
 from .serializers import ProductSerializer
-from .mixins import StaffEditorPermissionMixin
+from .mixins import StaffEditorPermissionMixin,UserQuerySetMixin
+from . import client
+
+class SearchListView(generics.GenericAPIView):
+    def get(self,request,*args, **kwargs):
+        user =None
+        if request.user.is_authenticated:
+            user = request.user.username
+        query = request.GET.get('q')
+        public = str(request.GET.get('public')) != "0"
+        tag = request.GET.get('tag') or None 
+        if not query:
+            return Response('',status=400)
+        results = client.perform_search(query,tags=tag,user=user,public=public)
+        return Response(results)
 
 class ProductListCreateAPIView(
+    UserQuerySetMixin,
     StaffEditorPermissionMixin,
     generics.ListCreateAPIView):
     queryset = Product.objects.all()
@@ -20,8 +35,16 @@ class ProductListCreateAPIView(
         content = serializer.validated_data.get('content') or None
         if content is None:
             content = title
-        serializer.save(content=content)
+        serializer.save(user = self.request.user,content=content)
 
+    # def get_queryset(self,*args, **kwargs):
+    #     qs = super().get_queryset(*args, **kwargs)
+    #     request = self.request
+    #     user = request.user
+    #     if not user.is_authenticated:
+    #         return Product.objects.none()
+    #     return qs.filter(user=request.user)
+    
 product_list_create_view = ProductListCreateAPIView.as_view()
 
 class ProductDetailAPIView(    
@@ -122,3 +145,18 @@ def product_alt_view(request, pk=None, *args, **kwargs):
             serializer.save(content=content)
             return Response(serializer.data)
         return Response({"invalid": "not good data"}, status=400)
+
+class SearchListOldView(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        q = self.request.GET.get('q')
+        results = Product.objects.none()
+        if q is not None:
+            user = None
+            if self.request.user.is_authenticated:
+                user = self.request.user
+            results = qs.search(q, user=user)
+        return results    
